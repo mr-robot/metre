@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+{% autoescape true %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>{%block title%} {%endblock%}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static', filename='css/bootstrap.css')}}" rel="stylesheet">
+
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{{url_for('static', filename='js/hover.zoom.js')}}"></script>
+    <script src="{{url_for('static', filename='js/hover.zoom.conf.js')}}"></script>
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+{%block header%}
+<!-- Static navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+
+        <div class="row">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Datafall</a>
+            </div>
+
+            <div class="navbar-collapse collapse" id="searchbar">
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li id="userPage">
+                        <a href="#@userpage"><i class="icon-user"></i>Settings</a>
+                    </li>
+                    <li><a href="#logout" data-prevent="">Logout</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" title="Start a new search">Advanced</a></li>
+                </ul>
+
+
+                <form class="navbar-form" method="get" action="/">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                            <input class="form-control" name="search" placeholder="Search Here" autocomplete="off"
+                                   autofocus="autofocus" type="text" id="primary-search" value="{{search}}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <select class="form-control" name="collection">
+
+                            {% for option in collections %}
+                            <option>{{option}}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+
+                    {% for field in form %}
+
+                    {% if field.type == "HiddenField" or field.type == "CSRFTokenField" %}
+                    {{field}}
+
+                    {% endif %}
+                    {% endfor %}
+
+                </form>
+
+            </div>
+            <!--/.nav-collapse -->
+
+
+        </div>
+    </div>
+</div>
+
+{%endblock%}
+
+{%block body%}
+<!-- +++++ Welcome Section +++++ -->
+<div id="ww" style="">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 centered">
+                <img src="assets/img/user.png" alt="Stanley">
+
+                <h1>Hi!
+            </div>
+            <!-- /col-lg-8 -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /ww -->
+
+<div class="container">
+    <div class="row mt">
+        <div class="col-lg-6 col-lg-offset-3 centered">
+            <h3>CONTACT ME</h3>
+            <hr>
+            <p>It is a long established fact that a reader will be distracted by the readable content of a page when
+                looking at its layout.</p>
+        </div>
+    </div>
+    <div class="row mt">
+        <div class="col-lg-8 col-lg-offset-2">
+            <form role="form">
+                <div class="form-group">
+                    <input type="name" class="form-control" id="NameInputEmail1" placeholder="Your Name">
+                    <br>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                    <br>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="subjectEmail1" placeholder="Subject">
+                    <br>
+                </div>
+                <textarea class="form-control" rows="6" placeholder="Enter your text here"></textarea>
+                <br>
+                <button type="submit" class="btn btn-success">SUBMIT</button>
+            </form>
+        </div>
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+
+{%endblock%}
+
+{%block footer%}
+
+<!-- +++++ Footer Section +++++ -->
+
+<div id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <h4>Data</h4>
+
+                <p>
+                    Address,<br/>
+                    +555555, <br/>
+                    ...
+                </p>
+            </div>
+            <!-- /col-lg-4 -->
+
+            <div class="col-lg-4">
+                <h4>My Links</h4>
+
+                <p>
+                    <a href="#">Dribbble</a><br/>
+                    <a href="#">Twitter</a><br/>
+                    <a href="#">Facebook</a>
+                </p>
+            </div>
+            <!-- /col-lg-4 -->
+
+            <div class="col-lg-4">
+                <h4>About Datafall</h4>
+
+                <p>....</p>
+            </div>
+            <!-- /col-lg-4 -->
+
+        </div>
+
+    </div>
+</div>
+
+
+{%endblock%}
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+</body>
+</html>
+
+{% endautoescape %}

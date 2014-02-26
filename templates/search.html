@@ -1,0 +1,74 @@
+{% extends "base_layout.html" %}
+{%block title%} Search {%endblock%}
+
+
+{%block body%}
+<div class="container-fluid search-body">
+    <div class="row">
+
+        <!--
+<div class="col-sm-2 col-sm-offset-1">
+<ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Home</a></li>
+<li><a href="#">Profile</a></li>
+<li><a href="#">Messages</a></li>
+    </ul>
+    </div>
+
+    -->
+
+
+        {% if results and raw_results %}
+
+        <div class="col-lg-8 col-lg-offset-2">
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#home" data-toggle="tab">Table</a></li>
+                <li><a href="#json-raw" data-toggle="tab">JSON</a></li>
+
+                <li><a href="#csv-raw" data-toggle="tab">CSV</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="home">
+
+
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            {% for field in headers %}
+                            <th>{{field}}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+
+                        <thead>
+
+                        {% for document in results %}
+                        <tr>
+
+                            {% for field in document %}
+                            <th>{{document[field]}}</th>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                <div class="tab-pane" id="json-raw">
+                            <pre class="prettyprint">
+                                    {{raw_results}}
+                            </pre>
+
+                </div>
+            </div>
+        </div>
+        <!-- /col-lg-8 -->
+        {% endif %}
+    </div>
+    <!-- /row -->
+</div> <!-- /container -->
+
+
+{%endblock%}
+{%block footer%}
+{%endblock%}
