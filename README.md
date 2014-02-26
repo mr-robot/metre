@@ -1,4 +1,4 @@
 metre
 =====
 
-Metre is a python integration framework
+Metre is a flask application for accessing data
