@@ -141,9 +141,11 @@ def refined_landing_page():
     page_data = {}
 
     page_data["form"] = SearchForm(csrf_context=session)
-    page_data["collections"] = manager.get_available_objects()
+    page_data["objects"] = manager.get_available_objects()
 
-    page_data["results"] = None
+    page_data["results"] =["1"]
+
+    page_data["raw_results"] = ["1"]
     if search:
         results, headers, raw_results = manager.refined_search(search)
         page_data["results"] = results
@@ -152,7 +154,7 @@ def refined_landing_page():
         page_data["raw_results"] = pprint.pformat(raw_results)
         page_data["search"] = search["search"]
 
-    return render_template('search.html', **page_data)
+    return render_template('refined_search.html', **page_data)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ __author__ = 'beast'
 from datetime import datetime
 
 from faker import Factory
-from datafall.main import build_application, raw_db
+from metre.main import build_application, raw_db
 
 
 def create_fake_customers(fake, db, collection):

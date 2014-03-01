@@ -9,6 +9,8 @@ import dateutil.parser as dtparser
 import dateutil.tz
 from pymongo.database import InvalidName
 
+from model import Object
+
 
 def getCode(length=4, char=string.ascii_uppercase +
                            string.digits +
@@ -73,7 +75,12 @@ class Manager(object):
         return {"Customers": "Customers"}
 
     def get_available_objects(self):
-        return {"Customers": "Customers"}
+
+        available_objects = {}
+        for obj in Object.objects.only('name'):
+            available_objects[obj] = obj
+
+        return available_objects
 
     def create_search(self):
         pass

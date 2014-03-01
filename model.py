@@ -10,12 +10,39 @@ db = MongoEngine()
 
 raw_db = PyMongo()
 
+'''
+    Search Objects
 
-class Search(db.Document):
+'''
+
+
+class BaseSearch(db.Document):
     name = db.StringField(max_length=60)
-    spec = db.StringField()
     done = db.BooleanField(default=False)
     created_date = db.DateTimeField(default=datetime.datetime.now)
+
+
+    meta = {'allow_inheritance': True}
+
+class Search(BaseSearch):
+    spec = db.StringField()
+
+class MapReduceQuery(BaseSearch):
+    map = db.StringField()
+    reduce = db.StringField()
+    out = db.StringField()
+
+
+class Aggregation(Search):
+    pass
+
+
+'''
+    User Management Objects
+
+'''
+
+
 
 
 class User(db.Document):
@@ -24,27 +51,34 @@ class User(db.Document):
     recent_searches = db.ListField(db.ReferenceField(Search))
 
 
+
+'''
+    Refined Objects
+
+'''
+class DocMap(db.EmbeddedDocument):
+
+    default_search = db.ReferenceField(Search)
+    collection_name = db.StringField()
+
+    included_fields = db.ListField(db.StringField())
+
+class DownMap(db.Document):
+    name = db.StringField(max_length=60)
+    collections = db.ListField(db.EmbeddedDocumentField(DocMap))
+    created_date = db.DateTimeField(default=datetime.datetime.now)
+
+
 class Object(db.Document):
     name = db.StringField(max_length=60)
     created_date = db.DateTimeField(default=datetime.datetime.now)
 
     map = db.ReferenceField(DownMap)
 
-
-class Entity(Object):
-    pass
-
-
-class Event(Object):
-    pass
+    mr_search = db.ListField(MapReduceQuery)
+    aggregatations= db.ListField(Aggregation)
 
 
-class DocMap(db.EmbeddedDocument):
-    pass
 
 
-class DownMap(db.Document):
-    name = db.StringField(max_length=60)
-    collections = db.ListField(EmbeddedDocumentField(DocMap))
-    created_date = db.DateTimeField(default=datetime.datetime.now)
 

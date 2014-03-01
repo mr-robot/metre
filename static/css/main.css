@@ -126,6 +126,11 @@ a:after {
 }
 
 
+.navbar-refined {
+	background-color: #222222;
+	border-color: #16a085;
+}
+
 /* Helpers */
 
 .mt {
