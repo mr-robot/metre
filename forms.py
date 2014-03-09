@@ -12,6 +12,7 @@ from wtforms import widgets, validators
 from constants.timezone import named
 
 
+
 timezones = named
 #abbreviations
 
@@ -140,4 +141,16 @@ class SearchForm(MyBaseCSRFForm):
     search = TextField(u'', validators=[validators.input_required()])
 
     collection = SelectField(u'Collection', choices={}, validators=[validators.input_required()], default="")
+
+
+class AdvancedSearchForm(MyBaseCSRFForm):
+    search = TextField(u'', validators=[validators.input_required()])
+
+    collection = SelectField(u'Collection', choices={}, validators=[validators.input_required()], default="")
+
+
+class AddCollectionForm(MyBaseCSRFForm):
+    label = TextField(u'', validators=[validators.input_required()])
+
+    collection = SelectField(u'Collection', choices={}, coerce=str, validators=[validators.input_required()])
 

@@ -9,13 +9,9 @@ import dateutil.parser as dtparser
 import dateutil.tz
 from pymongo.database import InvalidName
 
-from model import Object
+from model import Search, FancySearch, MapReduceQuery, Aggregation, SearchConstants, Result, SearchableCollections
 
 
-def getCode(length=4, char=string.ascii_uppercase +
-                           string.digits +
-                           string.ascii_lowercase):
-    return ''.join(random.choice(char) for x in range(length))
 
 
 def class_from_string(whole_name, **kwargs):
@@ -35,22 +31,14 @@ def class_from_string(whole_name, **kwargs):
 def get_default_exclusions():
     return {"_id"}
 
+class SearchManager(object):
 
-class Manager(object):
-    def __init__(self, config, db, raw_db):
-        self.DEBUG = config.DEBUG
-        self.mongo = db
-        self.raw_db = raw_db
+    def __init__(self, db):
+        self.raw_db = db
 
+    def search(self, search):
+        pass
 
-    def prepare_search_params(self, search_params):
-        collection, spec, fields, limit = None, None, None, 0
-
-        if search_params["search"] and len(search_params["search"]) > 0:
-            spec = json.loads(search_params["search"])
-        collection = search_params["collection"]
-
-        return collection, spec, fields, limit
 
     def read_in(self, results):
         results_list = []
@@ -71,68 +59,124 @@ class Manager(object):
         return header_keys
 
 
+
+
+class BasicSearchManager(SearchManager):
+
+    def search(self, search):
+
+        results = []
+        if search.spec:
+            results = self.raw_db.db[search.collection].find(spec=search.spec, limit=search.limit)
+        else:
+            results = self.raw_db.db[search.collection].find()
+            #(spec=spec, fields=fields, limit=limit)
+
+        if results and results.count() > 0:
+            results = self.read_in(results)
+
+            headers = self.get_fields(results)
+
+            return Result(results, headers)
+        return Result([],[])
+
+def fancy_search(search):
+    return {}
+def map_reduce(search):
+    return {}
+
+
+
+def search_factory(db, search_object):
+    if search_object.type == SearchConstants.BASIC:
+        return BasicSearchManager(db).search(search_object)
+    if search_object.type == SearchConstants.FANCY:
+        return BasicSearchManager(db).search(search_object)
+    if search_object.type == SearchConstants.AGGREGATE:
+        return BasicSearchManager(db).search(search_object)
+
+def get_name(spec):
+    return spec[0:20]
+
+def search_object_factory(collection, name, spec, type, fields, limit):
+    if type == SearchConstants.FANCY:
+        return FancySearch(name=name, collection=collection, type=type, spec=spec, limit=limit )
+    elif type == SearchConstants.BASIC:
+        return Search(name=name, collection=collection, type=type, spec=spec, limit=limit )
+    elif type == SearchConstants.AGGREGATE:
+        return Aggregation(name=name, collection=collection, type=type, spec=spec, limit=limit )
+    else:
+        return None
+
+
+class Manager(object):
+    def __init__(self, config, db, raw_db):
+        self.DEBUG = config.DEBUG
+        self.mongo = db
+        self.raw_db = raw_db
+
+
+    def prepare_search_params(self, search_params):
+        print search_params
+
+        if "id" in search_params and search_params["id"]:
+            id = search_params["id"]
+            #Get an Existing Search
+
+
+            return ""
+
+        else:
+
+            collection, name, spec, type, fields, limit = None,None, None, "Fancy", None, 0
+
+            if search_params["search"] and len(search_params["search"]) > 0:
+                spec = json.loads(search_params["search"])
+                name = get_name(search_params["search"])
+            collection = search_params["collection"]
+
+            if "type" in search_params and search_params["type"]:
+                type = search_params["type"]
+
+
+            search_object = search_object_factory(collection, name, spec, type, fields, limit)
+
+            return search_object
+
+
+
     def get_available_collections(self):
-        return {"Customers": "Customers"}
+        collections = SearchableCollections.objects
 
-    def get_available_objects(self):
+        return collections
 
-        available_objects = {}
-        for obj in Object.objects.only('name'):
-            available_objects[obj] = obj
+    def add_collection(self, label, collection_name):
+        sc = SearchableCollections(label=label, collection_name=collection_name)
+        sc.save()
+        return sc
 
-        return available_objects
+    def get_raw_collections(self):
+        return self.raw_db.db.collection_names()
+
 
     def create_search(self):
         pass
 
-
-    def refined_search(self, search_params):
-        collection, spec, fields, limit = self.prepare_search_params(search_params)
-
-        if collection:
-            try:
-                results = []
-                print spec
-                if spec:
-                    results = self.raw_db.db[collection].find(spec=spec, fields=fields, limit=limit)
-                else:
-                    results = self.raw_db.db[collection].find()
-                    #(spec=spec, fields=fields, limit=limit)
-
-                if results and results.count() > 0:
-                    results = self.read_in(results)
-
-                    headers = self.get_fields(results)
-
-                    return results, headers, results
-
-            except InvalidName:
-                return None, None, None
-
-        return None, None, None
-
+    def build_search(self, down_map, raw_search):
+        if raw_search:
+            return down_map.default_search.spec % raw_search
+        else:
+            return ""
 
     def search(self, search_params):
-        collection, spec, fields, limit = self.prepare_search_params(search_params)
+        search_object = self.prepare_search_params(search_params)
 
-        if collection:
+        if search_object:
             try:
-                results = []
-                print spec
-                if spec:
-                    results = self.raw_db.db[collection].find(spec=spec, fields=fields, limit=limit)
-                else:
-                    results = self.raw_db.db[collection].find()
-                    #(spec=spec, fields=fields, limit=limit)
+                return search_factory(self.raw_db, search_object)
 
-                if results and results.count() > 0:
-                    results = self.read_in(results)
-
-                    headers = self.get_fields(results)
-
-                    return results, headers, results
 
             except InvalidName:
-                return None, None, None
+                return Result([],[])
 
-        return None, None, None
+        return Result([],[])

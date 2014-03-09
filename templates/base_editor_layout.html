@@ -18,7 +18,6 @@
 
     <!-- Custom styles for this template -->
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
-    <link href="{{url_for('static', filename='css/refined.css')}}" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="{{url_for('static', filename='js/hover.zoom.js')}}"></script>
@@ -36,7 +35,7 @@
 
 {%block header%}
 <!-- Static navbar -->
-<div class="navbar navbar-fixed-top navbar-refined">
+<div class="navbar navbar-inverse navbar-fixed-top navbar-mini">
     <div class="container">
 
         <div class="row">
@@ -46,8 +45,28 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">Datafall</a>
+                <a class="navbar-brand" href="/">Metre</a>
             </div>
+
+            <div class="navbar-collapse collapse" id="searchbar">
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li id="userPage">
+                        <a href="#@userpage"><i class="icon-user"></i>Settings</a>
+                    </li>
+                    <li><a href="#logout" data-prevent="">Logout</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" title="Start a new agreggation">Aggregate</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" title="Start a new search">Advanced</a></li>
+                </ul>
+
+
+
+            </div>
+            <!--/.nav-collapse -->
 
 
         </div>
@@ -57,55 +76,7 @@
 {%endblock%}
 
 {%block body%}
-<!-- +++++ Welcome Section +++++ -->
-<div id="ww" style="">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 centered">
-                <img src="assets/img/user.png" alt="Stanley">
 
-                <h1>Hi!
-            </div>
-            <!-- /col-lg-8 -->
-        </div>
-        <!-- /row -->
-    </div>
-    <!-- /container -->
-</div>
-<!-- /ww -->
-
-<div class="container">
-    <div class="row mt">
-        <div class="col-lg-6 col-lg-offset-3 centered">
-            <h3>CONTACT ME</h3>
-            <hr>
-            <p>It is a long established fact that a reader will be distracted by the readable content of a page when
-                looking at its layout.</p>
-        </div>
-    </div>
-    <div class="row mt">
-        <div class="col-lg-8 col-lg-offset-2">
-            <form role="form">
-                <div class="form-group">
-                    <input type="name" class="form-control" id="NameInputEmail1" placeholder="Your Name">
-                    <br>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                    <br>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control" id="subjectEmail1" placeholder="Subject">
-                    <br>
-                </div>
-                <textarea class="form-control" rows="6" placeholder="Enter your text here"></textarea>
-                <br>
-                <button type="submit" class="btn btn-success">SUBMIT</button>
-            </form>
-        </div>
-    </div>
-    <!-- /row -->
-</div>
 <!-- /container -->
 
 {%endblock%}

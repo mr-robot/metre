@@ -1,0 +1,131 @@
+{% extends "base_advanced_layout.html" %}
+{%block title%} Editor {%endblock%}
+
+
+{%block body%}
+<div class="container-fluid search-mini-body">
+    <div class="row">
+
+        <div class="col-xs-2 col-xs-offset-2">
+<ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Collections</a></li>
+<li><a href="#">Aggregation</a></li>
+<li><a href="#">Pre-built Search</a></li>
+    </ul>
+
+
+
+        </div>
+
+
+
+                <div class="col-xs-8">
+                <h1>Collections Setup</h1>
+
+
+
+  <form class="form-horizontal" action="/admin/collections" method="post" role="form">
+
+      {% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% for field in form %}
+
+{% if field.type == "HiddenField" or field.type == "CSRFTokenField" %}
+{{field}}
+
+{% elif field.type == "BooleanField" %}
+
+      <div class="col-sm-offset-2 col-sm-6">
+      <div class="checkbox col-sm-offset-2">
+        <label>
+          {{field}} {{field.label}}
+        </label>
+      </div>
+    </div>
+    <br/>
+
+{% elif field.type == "DateField" %}
+
+
+<div class="form-group">
+
+  <label class="col-sm-2 control-label" for="{{ field.name }}">{{ field.label }}</label>
+
+           <div class="col-sm-6 date" data-datepicker="true">
+    {{field}}
+    </div>
+</div>
+
+
+{% elif field.type == "TimeField" %}
+
+
+<div class="form-group">
+
+  <label class="col-sm-2 control-label" for="{{ field.name }}">{{ field.label }}</label>
+
+           <div class="col-sm-6 bootstrap-timepicker">
+    {{field}}
+    </div>
+</div>
+
+
+{% elif field.type == "FormField" %}
+<div class="form-group">
+
+  <label class="col-sm-2 control-label" for="{{ field.name }}">{{ field.label }}</label>
+
+       <div class="col-sm-8">
+        {{field}}
+          </div>
+
+
+
+</div>
+{% else %}
+<div class="form-group">
+
+  <label class="col-sm-2 control-label" for="{{ field.name }}">{{ field.label }}</label>
+
+       <div class="col-sm-6">
+        {{field}}
+          </div>
+
+</div>
+{% endif %}
+{% endfor %}
+
+    <button id="button1id" name="button1id" class="btn btn-primary">Create Conference</button>
+
+
+
+        </div>
+
+        <!--
+<div class="col-sm-2 col-sm-offset-1">
+<ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Home</a></li>
+<li><a href="#">Profile</a></li>
+<li><a href="#">Messages</a></li>
+    </ul>
+    </div>
+
+    -->
+
+    </div>
+    <!-- /row -->
+</div> <!-- /container -->
+
+
+{%endblock%}
+{%block footer%}
+{%endblock%}

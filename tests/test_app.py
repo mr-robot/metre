@@ -51,14 +51,14 @@ class TestApplication(unittest.TestCase):
 
     def test_get_search(self):
         with self.app.app_context():
-            response = self.test_app.get('/fresh')
+            response = self.test_app.get('/search')
             self.assertIsNotNone(response)
             self.assertEquals(response.status_code, 200)
             bs = BeautifulSoup(response.data)
             self.assertEquals(bs.title.string, u' Search ')
             form = bs.find_all('form')[0]
             self.assertIsNotNone(form)
-            self.assertEquals(form.get('action'), '/')
+            self.assertEquals(form.get('action'), '/search')
             self.assertEquals(form.get('class')[0], 'navbar-form')
             self.assertEquals(form.get('method'), 'get')
             self.assertIsNotNone(form.find(id='csrf_token'))
@@ -68,7 +68,7 @@ class TestApplication(unittest.TestCase):
 
     def test_send_search(self):
         with self.app.app_context():
-            response = self.test_app.get('/fresh')
+            response = self.test_app.get('/search')
             bs = BeautifulSoup(response.data)
             self.assertEquals(bs.title.string, u' Search ')
             form = bs.find_all('form')[0]
@@ -80,20 +80,20 @@ class TestApplication(unittest.TestCase):
 
             search_url = urlencode(search_params)
 
-            response = self.test_app.get("/fresh?%s" % (search_url), )
+            response = self.test_app.get("/search?%s" % (search_url), )
             self.assertIsNotNone(response)
             self.assertEquals(response.status_code, 200)
 
     def test_get_refined_search(self):
         with self.app.app_context():
-            response = self.test_app.get('/refined')
+            response = self.test_app.get('/search')
             self.assertIsNotNone(response)
             self.assertEquals(response.status_code, 200)
             bs = BeautifulSoup(response.data)
             self.assertEquals(bs.title.string, u' Search ')
             form = bs.find_all('form')[0]
             self.assertIsNotNone(form)
-            self.assertEquals(form.get('action'), '/')
+            self.assertEquals(form.get('action'), '/search')
             self.assertEquals(form.get('class')[0], 'navbar-form')
             self.assertEquals(form.get('method'), 'get')
             self.assertIsNotNone(form.find(id='csrf_token'))

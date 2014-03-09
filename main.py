@@ -9,11 +9,11 @@ import pprint
 
 from flask import Flask, g, session
 from flask import redirect, request
-from flask import render_template
+from flask import render_template, url_for
 from werkzeug.local import LocalProxy
 
 from model import db, raw_db
-from forms import SearchForm
+from forms import SearchForm, AdvancedSearchForm, AddCollectionForm
 from controller import Manager
 from settings import config
 
@@ -32,11 +32,11 @@ def build_application():
 app = build_application()
 
 
-def get_manager():
+def get_manager(test_only=False):
     m_manager = getattr(g, '_manager', None)
 
     if m_manager is None:
-        m_manager = Manager(config(test_only=True), db, raw_db)
+        m_manager = Manager(config(test_only=test_only), db, raw_db)
 
     return m_manager
 
@@ -49,12 +49,32 @@ def get_search_parameters():
 
         search_values = dict()
         search_values["search"] = request.args.get("search")
+        search_values["id"] = None
 
         if request.args.get("page"):
             search_values["page"] = request.args.get("page")
 
+
+
+        if request.args.get("id"):
+            search_values["id"] = request.args.get("id")
+
         if request.args.get("collection"):
             search_values["collection"] = request.args.get("collection")
+
+
+        if request.args.get("object"):
+            search_values["object"] = request.args.get("object")
+
+
+
+        if request.args.get("firstCommand"):
+            search_values["firstCommand"] = request.args.get("firstCommand")
+
+
+
+        if request.args.get("secondCommand"):
+            search_values["secondCommand"] = request.args.get("secondCommand")
 
         return search_values
     else:
@@ -73,88 +93,94 @@ def login_page(name=None):
     return render_template('login.html', name=name)
 
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/admin', methods=['GET', 'POST'])
 def update_settings_page():
     """ Return template at application root URL."""
     template_values = {}
 
-    return render_template('settings.html', **template_values)
+    return render_template('admin.html', **template_values)
+
+    #return redirect(url_for('login_page'))
+
+@app.route('/admin/collections', methods=['GET', 'POST'])
+def update_collection_settings_page():
+    """ Return template at application root URL."""
+
+    collection_names = {}
+
+    for name in manager.get_raw_collections():
+        collection_names[name]= name
+    template_values = {}
+    if request.method == 'POST':
+
+        form = AddCollectionForm(request.form, csrf_context=session)
+        form.collection.choices = collection_names.iteritems()
+
+        if form.validate():
+
+            manager.add_collection(form.label.data, form.collection.data)
+            return redirect(url_for('update_settings_page'))
+        else:
+
+            template_values["form"] = form
+            return render_template('admin_collections.html', **template_values)
+
+    else:
+
+        form = AddCollectionForm(csrf_context=session)
+        form.collection.choices = collection_names.iteritems()
+        template_values["form"] = form
+        return render_template('admin_collections.html', **template_values)
 
     #return redirect(url_for('login_page'))
 
 
-@app.route('/fresh', methods=['GET'])
-def landing_page():
+@app.route('/')
+def landing_page(name=None):
+    return render_template('landing.html')
+
+@app.route('/search', methods=['GET'])
+def search_page():
     """ Return hello template at application root URL."""
     search = get_search_parameters()
     page_data = {}
 
     page_data["form"] = SearchForm(csrf_context=session)
     page_data["collections"] = manager.get_available_collections()
+    page_data["result"] = None
 
-    page_data["results"] = None
     if search:
-        results, headers, raw_results = manager.search(search)
-        page_data["results"] = results
-        page_data["headers"] = headers
+        result = manager.search(search)
+        page_data["result"] = result.results
+        page_data["headers"] = result.headers
 
-        page_data["raw_results"] = pprint.pformat(raw_results)
+        page_data["raw_results"] = pprint.pformat(result.raw_results)
         page_data["search"] = search["search"]
 
     return render_template('search.html', **page_data)
 
 
-@app.route('/fresh/aggregatr/', methods=['GET'])
-def aggregation_page():
+@app.route('/advanced', methods=['GET','POST'])
+def advanced_page():
     """ Return hello template at application root URL."""
     search = get_search_parameters()
     page_data = {}
 
-    page_data["results"] = None
+    page_data["form"] = AdvancedSearchForm(csrf_context=session)
+    page_data["collections"] = manager.get_available_collections()
+    page_data["result"] = None
+
     if search:
-        results, headers = manager.search(search)
-        page_data["results"] = results
-        page_data["headers"] = headers
+        result = manager.search(search)
+        page_data["result"] = result.results
+        page_data["headers"] = result.headers
 
-    return render_template('search.html', **page_data)
-
-
-@app.route('/fresh/mapreduce/', methods=['GET'])
-def map_reduce_page():
-    """ Return hello template at application root URL."""
-    search = get_search_parameters()
-    page_data = {}
-
-    page_data["results"] = None
-    if search:
-        results, headers = manager.search(search)
-        page_data["results"] = results
-        page_data["headers"] = headers
-
-    return render_template('search.html', **page_data)
-
-
-@app.route('/refined', methods=['GET'])
-def refined_landing_page():
-    """ Return hello template at application root URL."""
-    search = get_search_parameters()
-    page_data = {}
-
-    page_data["form"] = SearchForm(csrf_context=session)
-    page_data["objects"] = manager.get_available_objects()
-
-    page_data["results"] =["1"]
-
-    page_data["raw_results"] = ["1"]
-    if search:
-        results, headers, raw_results = manager.refined_search(search)
-        page_data["results"] = results
-        page_data["headers"] = headers
-
-        page_data["raw_results"] = pprint.pformat(raw_results)
+        page_data["raw_results"] = pprint.pformat(result.raw_results)
         page_data["search"] = search["search"]
 
-    return render_template('refined_search.html', **page_data)
+    return render_template('advanced.html', **page_data)
+
+
 
 
 if __name__ == "__main__":

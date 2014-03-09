@@ -35,7 +35,7 @@
 
 {%block header%}
 <!-- Static navbar -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-inverse navbar-fixed-top navbar-mini">
     <div class="container">
 
         <div class="row">
@@ -52,42 +52,15 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li id="userPage">
-                        <a href="/admin"><i class="icon-user"></i>Settings</a>
+                        <a href="#@userpage"><i class="icon-user"></i>Settings</a>
                     </li>
                     <li><a href="/logout" data-prevent="">Logout</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/advanced" title="Start a new search">Advanced Tools</a></li>
+                    <li><a href="/search" title="Start a new search">Basic Search</a></li>
                 </ul>
 
 
-                <form class="navbar-form" method="get" action="/search">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                            <input class="form-control" name="search" placeholder="Search Here" autocomplete="off"
-                                   autofocus="autofocus" type="text" id="primary-search" value="{{search}}">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <select class="form-control" name="collection">
-
-                            {% for option in collections %}
-                            <option>{{option}}</option>
-                            {%endfor%}
-                        </select>
-                    </div>
-
-                    {% for field in form %}
-
-                    {% if field.type == "HiddenField" or field.type == "CSRFTokenField" %}
-                    {{field}}
-
-                    {% endif %}
-                    {% endfor %}
-
-                </form>
 
             </div>
             <!--/.nav-collapse -->
@@ -100,55 +73,7 @@
 {%endblock%}
 
 {%block body%}
-<!-- +++++ Welcome Section +++++ -->
-<div id="ww" style="">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 centered">
-                <img src="assets/img/user.png" alt="Stanley">
 
-                <h1>Hi!
-            </div>
-            <!-- /col-lg-8 -->
-        </div>
-        <!-- /row -->
-    </div>
-    <!-- /container -->
-</div>
-<!-- /ww -->
-
-<div class="container">
-    <div class="row mt">
-        <div class="col-lg-6 col-lg-offset-3 centered">
-            <h3>CONTACT ME</h3>
-            <hr>
-            <p>It is a long established fact that a reader will be distracted by the readable content of a page when
-                looking at its layout.</p>
-        </div>
-    </div>
-    <div class="row mt">
-        <div class="col-lg-8 col-lg-offset-2">
-            <form role="form">
-                <div class="form-group">
-                    <input type="name" class="form-control" id="NameInputEmail1" placeholder="Your Name">
-                    <br>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                    <br>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control" id="subjectEmail1" placeholder="Subject">
-                    <br>
-                </div>
-                <textarea class="form-control" rows="6" placeholder="Enter your text here"></textarea>
-                <br>
-                <button type="submit" class="btn btn-success">SUBMIT</button>
-            </form>
-        </div>
-    </div>
-    <!-- /row -->
-</div>
 <!-- /container -->
 
 {%endblock%}

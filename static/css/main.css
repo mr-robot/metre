@@ -261,3 +261,29 @@ bt {
 #primary-search {
 	width: 500px;
 }
+
+.navbar-mini {
+	padding-bottom: 20px;
+	padding-top: 20px;
+}
+.search-mini-body {
+	padding-top: 120px;
+	padding-bottom: 70px;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+    margin-right:-4px;
+}
+
+.landing-container{
+    height: 100%;
+    display: table;
+    vertical-align: middle;
+}
+.vertical-center-row{
+    display: table-cell;
+    vertical-align: middle;
+}
