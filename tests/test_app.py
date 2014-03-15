@@ -102,5 +102,42 @@ class TestApplication(unittest.TestCase):
             self.assertNotEqual(form.find(id='csrf_token').get('value'), '')
 
 
+    def test_get_aggregation_search(self):
+        with self.app.app_context():
+            response = self.test_app.get('/advanced')
+            self.assertIsNotNone(response)
+            self.assertEquals(response.status_code, 200)
+            bs = BeautifulSoup(response.data)
+            self.assertEquals(bs.title.string, u' Aggregate ')
+            form = bs.find_all('form')[0]
+            self.assertIsNotNone(form)
+            self.assertEquals(form.get('action'), '/advanced')
+            self.assertEquals(form.get('class')[0], 'form')
+            self.assertEquals(form.get('method'), 'post')
+            self.assertIsNotNone(form.find(id='csrf_token'))
+            self.assertEquals(form.find(id='csrf_token').get('type'), 'hidden')
+            self.assertEquals(form.find(id='csrf_token').get('name'), 'csrf_token')
+            self.assertNotEqual(form.find(id='csrf_token').get('value'), '')
+
+
+
+    def test_send_aggregation(self):
+        with self.app.app_context():
+            response = self.test_app.get('/advanced')
+            bs = BeautifulSoup(response.data)
+            self.assertEquals(bs.title.string, u' Aggregate ')
+            form = bs.find_all('form')[0]
+            self.assertIsNotNone(form)
+
+            search_params = {'csrf_token': form.find(id='csrf_token').get('value'),
+                             "command-1-type": '$group',
+                             "command-1": '{"_id": "$tags", "count": {"$sum": 1}}',
+                             "collection": "Customer"}
+
+            response = self.test_app.post("/advanced", data=search_params )
+            self.assertIsNotNone(response)
+            self.assertEquals(response.status_code, 200)
+
+
 if __name__ == '__main__':
     unittest.main()

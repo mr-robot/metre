@@ -5,17 +5,18 @@
 
 
 # sys.path includes 'server/lib' due to appengine_config.py
-import pprint
+import pprint, logging
 
 from flask import Flask, g, session
 from flask import redirect, request
 from flask import render_template, url_for
 from werkzeug.local import LocalProxy
 
-from model import db, raw_db
+from model import db, raw_db, SearchConstants
 from forms import SearchForm, AdvancedSearchForm, AddCollectionForm
 from controller import Manager
 from settings import config
+import json
 
 
 def build_application():
@@ -67,14 +68,25 @@ def get_search_parameters():
             search_values["object"] = request.args.get("object")
 
 
+        #Get Commands
+        search_values["commands"] = []
 
-        if request.args.get("firstCommand"):
-            search_values["firstCommand"] = request.args.get("firstCommand")
+        if request.args.get("command-1"):
+            search_values["commands"].append({request.args.get("command-1-type"):json.loads(request.args.get("command-1"))})
+
+            search_values["type"]= SearchConstants.AGGREGATE
 
 
 
-        if request.args.get("secondCommand"):
-            search_values["secondCommand"] = request.args.get("secondCommand")
+        if request.args.get("command-2"):
+            search_values["commands"].append({request.args.get("command-2-type"):json.loads(request.args.get("command-2"))})
+
+            search_values["type"]= SearchConstants.AGGREGATE
+
+        if request.args.get("type"):
+            search_values["type"] = request.args.get("type")
+
+
 
         return search_values
     else:
@@ -169,8 +181,10 @@ def advanced_page():
     page_data["form"] = AdvancedSearchForm(csrf_context=session)
     page_data["collections"] = manager.get_available_collections()
     page_data["result"] = None
+    page_data["command_options"] = manager.get_available_commands()
 
     if search:
+        logging.debug("Started Search")
         result = manager.search(search)
         page_data["result"] = result.results
         page_data["headers"] = result.headers

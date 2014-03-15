@@ -19,6 +19,9 @@
     <!-- Custom styles for this template -->
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
 
+
+    <link href="{{url_for('static', filename='css/landing.css')}}" rel="stylesheet">
+
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="{{url_for('static', filename='js/hover.zoom.js')}}"></script>
     <script src="{{url_for('static', filename='js/hover.zoom.conf.js')}}"></script>
@@ -43,9 +46,9 @@
 
 {%block body%}
 
-<div class="container-fluid landing-container">
-    <div class="row vertical-center-row">
-        <div class="col-lg-6 col-lg-offset-3 centered">
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-lg-6 col-lg-offset-3">
             <h1>METRE</h1>
 
             <form class="navbar-form" method="get" action="/search">

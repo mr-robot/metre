@@ -1,4 +1,3 @@
-#Embedded file name: /home/beast/Projects/confer/confer/tests/test_app.py
 __author__ = 'beast'
 import unittest
 from urllib import urlencode
@@ -74,24 +73,17 @@ class TestController(unittest.TestCase):
 
             self.assertIsNotNone(result_object)
 
-    def test_add_collection(self):
+    def test_aggregation_search(self):
 
-        label = "Customer"
-        collection_name = self.test_collection
+        with self.app.app_context():
+            search_params = {
+                                 "command-1-type": '$group',
+                                 "command-1": '{"_id": "$tags", "count": {"$sum": 1}}',
+                                 "collection": "Customer"}
 
-        self.manager.add_collection(label, collection_name)
+            result_object = self.manager.search(search_params)
 
-        self.assertEquals(1, len(self.manager.get_available_collections()))
-
-
-    def test_add_collection(self):
-
-        label = "Customer"
-        collection_name = self.test_collection
-
-        self.manager.add_collection(label, collection_name)
-
-        self.assertEquals(1, len(self.manager.get_available_collections()))
+            self.assertIsNotNone(result_object)
 
 
 

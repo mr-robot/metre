@@ -4,6 +4,7 @@ import random
 import string
 import importlib
 import json
+import logging
 
 import dateutil.parser as dtparser
 import dateutil.tz
@@ -80,6 +81,25 @@ class BasicSearchManager(SearchManager):
             return Result(results, headers)
         return Result([],[])
 
+
+class AggregationSearchManager(SearchManager):
+
+    def search(self, search):
+
+        results = []
+        if search.spec:
+            results = self.raw_db.db[search.collection].aggregate(search.spec)
+
+
+        if results:
+            results = self.read_in(results)
+
+            headers = self.get_fields(results)
+
+            return Result(results, headers)
+        return Result([],[])
+
+
 def fancy_search(search):
     return {}
 def map_reduce(search):
@@ -93,7 +113,7 @@ def search_factory(db, search_object):
     if search_object.type == SearchConstants.FANCY:
         return BasicSearchManager(db).search(search_object)
     if search_object.type == SearchConstants.AGGREGATE:
-        return BasicSearchManager(db).search(search_object)
+        return AggregationSearchManager(db).search(search_object)
 
 def get_name(spec):
     return spec[0:20]
@@ -114,6 +134,8 @@ class Manager(object):
         self.DEBUG = config.DEBUG
         self.mongo = db
         self.raw_db = raw_db
+        self.config_collections = config.Collections
+        self.config_commands= config.Commands
 
 
     def prepare_search_params(self, search_params):
@@ -128,7 +150,7 @@ class Manager(object):
 
         else:
 
-            collection, name, spec, type, fields, limit = None,None, None, "Fancy", None, 0
+            collection, name, spec, type, fields, limit = None,None, None, SearchConstants.BASIC, None, 0
 
             if search_params["search"] and len(search_params["search"]) > 0:
                 spec = json.loads(search_params["search"])
@@ -139,6 +161,10 @@ class Manager(object):
                 type = search_params["type"]
 
 
+            if "commands" in search_params and search_params["commands"]:
+                spec = search_params["commands"]
+
+
             search_object = search_object_factory(collection, name, spec, type, fields, limit)
 
             return search_object
@@ -146,9 +172,7 @@ class Manager(object):
 
 
     def get_available_collections(self):
-        collections = SearchableCollections.objects
-
-        return collections
+        return self.config_collections
 
     def add_collection(self, label, collection_name):
         sc = SearchableCollections(label=label, collection_name=collection_name)
@@ -157,6 +181,10 @@ class Manager(object):
 
     def get_raw_collections(self):
         return self.raw_db.db.collection_names()
+
+
+    def get_available_commands(self):
+        return self.config_commands
 
 
     def create_search(self):
@@ -169,9 +197,13 @@ class Manager(object):
             return ""
 
     def search(self, search_params):
+
+        logging.info("Received Search Request")
         search_object = self.prepare_search_params(search_params)
 
         if search_object:
+
+            logging.info("Starting Search %s" % search_object.type)
             try:
                 return search_factory(self.raw_db, search_object)
 
